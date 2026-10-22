@@ -43,6 +43,9 @@
   border: 1px solid var(--bs-border-color, #cfd6dd);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  /* Ensure toolbar buttons stay clickable even when blueprint is rotated */
+  transform: translateZ(0);
+  backface-visibility: visible;
 }
 
 .floor-plan-toolbar-sep {

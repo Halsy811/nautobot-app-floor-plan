@@ -16,37 +16,38 @@
   }
 
   function injectStyles() {
-    if (document.getElementById("blueprint-import-styles")) return;
-    const css = `
-      .blueprint-import-modal { position: fixed; inset: 0; z-index: 1050; background: rgba(0,0,0,0.5);
-        display: flex; align-items: center; justify-content: center; }
-      .blueprint-import-dialog { background: var(--nb-body-bg, #fff); color: var(--nb-body-color, #1a1a1a);
-        width: min(920px, 94vw); max-height: 92vh; overflow: auto; border-radius: 8px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
-      .blueprint-import-head { display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 16px; border-bottom: 1px solid var(--nb-border-color, #cfd6dd); }
-      .blueprint-import-body { padding: 16px; }
-      .blueprint-import-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 10px; }
-      .blueprint-page-tile { border: 1px solid var(--nb-border-color, #cfd6dd); border-radius: 6px;
-        padding: 6px; background: #fff; cursor: pointer; text-align: center; }
-      .blueprint-page-tile:hover, .blueprint-page-tile:focus-visible { outline: 2px solid #1c7ed6; }
-      .blueprint-page-tile img { width: 100%; height: auto; display: block; }
-      .blueprint-page-tile .label { font-size: 12px; color: var(--nb-text-muted, #6b7f95); margin-top: 4px; }
-      .blueprint-import-crop-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-        margin-bottom: 10px; }
-      .blueprint-import-stage { position: relative; display: inline-block; max-width: 100%;
-        transform-origin: center center; }
-      .blueprint-import-stage img { display: block; max-width: 100%; height: auto; user-select: none; }
-      .blueprint-crop-box { position: absolute; border: 2px dashed #1c7ed6; background: rgba(28,126,214,0.08);
-        cursor: move; box-sizing: border-box; }
-      .blueprint-crop-handle { position: absolute; width: 14px; height: 14px; background: #fff;
-        border: 2px solid #1c7ed6; border-radius: 2px; }
-      .blueprint-crop-handle[data-corner="nw"] { left: -8px; top: -8px; cursor: nwse-resize; }
-      .blueprint-crop-handle[data-corner="ne"] { right: -8px; top: -8px; cursor: nesw-resize; }
-      .blueprint-crop-handle[data-corner="se"] { right: -8px; bottom: -8px; cursor: nwse-resize; }
-      .blueprint-crop-handle[data-corner="sw"] { left: -8px; bottom: -8px; cursor: nesw-resize; }
-    `;
+  if (document.getElementById("blueprint-import-styles")) return;
+  const css = `
+    .blueprint-import-modal { position: fixed; inset: 0; z-index: 1050; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center; }
+    .blueprint-import-dialog { background: var(--nb-body-bg, #fff); color: var(--nb-body-color, #1a1a1a);
+      width: min(920px, 94vw); max-height: 92vh; overflow: auto; border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+    .blueprint-import-head { display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid var(--nb-border-color, #cfd6dd); }
+    .blueprint-import-body { padding: 16px; }
+    .blueprint-import-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px; }
+    .blueprint-page-tile { border: 1px solid var(--nb-border-color, #cfd6dd); border-radius: 6px;
+      padding: 6px; background: #fff; cursor: pointer; text-align: center; }
+    .blueprint-page-tile:hover, .blueprint-page-tile:focus-visible { outline: 2px solid #1c7ed6; }
+    .blueprint-page-tile img { width: 100%; height: auto; display: block; }
+    .blueprint-page-tile .label { font-size: 12px; color: var(--nb-text-muted, #6b7f95); margin-top: 4px; }
+    .blueprint-import-crop-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      margin-bottom: 10px; position: relative; z-index: 10; background: white;
+      padding: 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .blueprint-import-stage { position: relative; display: inline-block; max-width: 100%;
+      transform-origin: center center; z-index: 1; }
+    .blueprint-import-stage img { display: block; max-width: 100%; height: auto; user-select: none; }
+    .blueprint-crop-box { position: absolute; border: 2px dashed #1c7ed6; background: rgba(28,126,214,0.08);
+      cursor: move; box-sizing: border-box; z-index: 5; }
+    .blueprint-crop-handle { position: absolute; width: 14px; height: 14px; background: #fff;
+      border: 2px solid #1c7ed6; border-radius: 2px; z-index: 6; }
+    .blueprint-crop-handle[data-corner="nw"] { left: -8px; top: -8px; cursor: nwse-resize; }
+    .blueprint-crop-handle[data-corner="ne"] { right: -8px; top: -8px; cursor: nesw-resize; }
+    .blueprint-crop-handle[data-corner="se"] { right: -8px; bottom: -8px; cursor: nwse-resize; }
+    .blueprint-crop-handle[data-corner="sw"] { left: -8px; bottom: -8px; cursor: nesw-resize; }
+  `;
     const style = document.createElement("style");
     style.id = "blueprint-import-styles";
     style.textContent = css;
@@ -99,12 +100,22 @@
     function openModal() {
       modal.hidden = false;
       showStep("upload");
-      setStatus("");
-      els.file.value = "";
+      resetModal();
       loadPages();  // if pages already exist from a prior render, jump to the picker
     }
     function closeModal() {
       modal.hidden = true;
+      resetModal();
+    }
+    
+    function resetModal() {
+      els.file.value = "";
+      els.pages.innerHTML = "";
+      els.uploadBtn.disabled = false;
+      setStatus("");
+      currentPage = null;
+      rotation = 0;
+      els.stage.style.transform = "rotate(0deg)";
     }
 
     button.addEventListener("click", openModal);
@@ -124,6 +135,12 @@
       }
     }
 
+    // Force reflow to ensure new styles are applied when modal reopens
+    function forceReflow() {
+      const stage = document.getElementById("blueprint-crop-stage");
+      if (stage) void stage.offsetWidth;
+    }
+
     function renderGrid(pages) {
       els.pages.innerHTML = "";
       pages.forEach((page) => {
@@ -134,7 +151,14 @@
         tile.innerHTML =
           `<img src="${page.thumbnail_url}" alt="Page ${page.page_number}">` +
           `<div class="label">Page ${page.page_number}</div>`;
-        const open = () => openCrop(page);
+        const open = () => {
+          // Clear any previous state before opening a new page
+          if (currentPage) {
+            currentPage = null;
+            forceReflow();
+          }
+          openCrop(page);
+        };
         tile.addEventListener("click", open);
         tile.addEventListener("keydown", (e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -204,6 +228,12 @@
 
     // ----- crop step -----
     function openCrop(page) {
+      // Clear previous state before loading new page
+      if (currentPage && currentPage !== page) {
+        els.pages.innerHTML = "";
+        forceReflow();
+      }
+      
       currentPage = page;
       rotation = 0;
       els.stage.style.transform = "rotate(0deg)";
