@@ -86,12 +86,14 @@
                         aria-pressed="false" disabled aria-disabled="true">
                     <span aria-hidden="true" class="mdi mdi-crop-rotate"></span> Calibrate
                 </button>
+                {% endif %}
+                
+                <!-- Replace PDF button - always visible in toolbar -->
                 <button type="button" class="btn btn-sm btn-info" id="replace-pdf-button"
-                        data-modal-target="#blueprint-import-modal"
-                        title="Upload a new PDF to replace this blueprint" hidden>
+                        data-modal-target="#blueprint-import-modal" title="Upload a new PDF to replace this blueprint"
+                        style="{% if not object.background_image %}display:none;{% endif %}">
                     <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Replace PDF
                 </button>
-                {% endif %}
             </div>
 
             {% if can_place %}
@@ -125,12 +127,6 @@
             </div>
             {% endif %}
 
-            {% if can_calibrate %}
-            <div class="floor-plan-tools-row" hidden id="replace-pdf-row">
-                <button type="button" class="btn btn-sm btn-info" id="import-pdf-button">
-                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Replace PDF
-                </button>
-            </div>
             {% endif %}
 
             {% if can_calibrate and object.background_image %}
@@ -197,19 +193,31 @@
                 </button>
             </div>
             <div class="blueprint-import-body">
-                <div id="blueprint-import-upload">
+                <!-- Upload step - always visible at top with clear UI -->
+                <div id="blueprint-import-upload" data-step="upload">
+                    <h5 style="margin: 0 0 12px 0; font-size: 14px; color: var(--nb-body-color, #1a1a1a);">
+                        <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Choose PDF File
+                    </h5>
+                    
                     {% if object.background_image %}
-                    <button type="button" class="btn btn-sm btn-danger" id="blueprint-import-clear-btn" style="margin-bottom: 8px;">
+                    <div class="alert alert-danger" style="margin-bottom: 12px; font-size: 13px;">
+                        <strong>Current blueprint detected.</strong> Click "Remove current blueprint" below to delete it before uploading a new one.
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger" id="blueprint-import-clear-btn">
                         <span aria-hidden="true" class="mdi mdi-delete"></span> Remove current blueprint
                     </button>
                     <hr style="border-top-color: var(--nb-border-color, #cfd6dd); margin: 12px 0;">
                     {% endif %}
-                    <label for="blueprint-import-file" style="display: block; margin-bottom: 6px; font-weight: 500;">Choose PDF file:</label>
-                    <input type="file" id="blueprint-import-file" accept="application/pdf,.pdf" aria-label="PDF file" style="width: 100%; box-sizing: border-box;">
-                    <button type="button" class="btn btn-sm btn-primary" id="blueprint-import-upload-btn" style="margin-top: 8px;">
-                        <span aria-hidden="true" class="mdi mdi-upload"></span> Upload &amp; render
+                    
+                    <label for="blueprint-import-file" style="display: block; margin: 8px 0 6px 0; font-weight: 500; font-size: 13px;">
+                        Select file:
+                    </label>
+                    <input type="file" id="blueprint-import-file" accept="application/pdf,.pdf" 
+                           aria-label="Select PDF file to upload">
+                    <button type="button" class="btn btn-sm btn-primary" id="blueprint-import-upload-btn" style="margin-top: 10px;">
+                        <span aria-hidden="true" class="mdi mdi-upload"></span> Upload &amp; render pages
                     </button>
-                    <span class="text-muted" id="blueprint-import-status" role="status" aria-live="polite"></span>
+                    <div class="text-muted" id="blueprint-import-status" role="status" aria-live="polite" style="margin-top: 8px; font-size: 13px;"></div>
                 </div>
                 <div id="blueprint-import-pages" class="blueprint-import-pages" hidden
                      aria-label="Rendered pages"></div>

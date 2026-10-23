@@ -30,12 +30,19 @@
     #blueprint-import-upload {
       position: relative;
       z-index: 1000;
-      margin-bottom: 16px;
-      padding: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
       background: var(--nb-body-bg, #f8f9fa);
-      border: 1px solid var(--nb-border-color, #cfd6dd);
-      border-radius: 6px;
+      border: 2px solid var(--nb-border-color, #cfd6dd);
+      border-radius: 8px;
+      transition: all 0.3s ease;
     }
+    
+    /* When already has blueprint, make the remove button more prominent */
+    #blueprint-import-upload.has-blueprint {
+      background: linear-gradient(135deg, rgba(248,24,35,0.03) 0%, rgba(0,0,0,0.02) 100%);
+    }
+    
     .blueprint-import-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 10px; }
     .blueprint-page-tile { border: 1px solid var(--nb-border-color, #cfd6dd); border-radius: 6px;
@@ -108,12 +115,10 @@
     const pagesApi = container.getAttribute("data-pages-api");
     const extractApi = container.getAttribute("data-extract-api");
     const jobResultApi = container.getAttribute("data-jobresult-api");
-    const button = document.getElementById("import-pdf-button");
     const modal = document.getElementById("blueprint-import-modal");
-    if (!importApi || !pagesApi || !extractApi || !button || !modal) return;
+    if (!importApi || !pagesApi || !extractApi || !modal) return;
 
     injectStyles();
-    button.hidden = false;
 
     const els = {
       close: document.getElementById("blueprint-import-close"),
@@ -132,7 +137,6 @@
       commit: document.getElementById("blueprint-crop-commit"),
       clearBtn: document.getElementById("blueprint-import-clear-btn"),
     };
-    const replacePdfButton = document.getElementById("replace-pdf-button");
     const csrf = getCookie("csrftoken");
     const headers = { "X-CSRFToken": csrf };
     let rotation = 0;
@@ -148,6 +152,7 @@
     }
     function openModal() {
       modal.hidden = false;
+      
       showStep("upload");
       resetModal();
       loadPages();  // if pages already exist from a prior render, jump to the picker
@@ -165,18 +170,28 @@
       currentPage = null;
       rotation = 0;
       els.stage.style.transform = "rotate(0deg)";
+      els.cropBox.hidden = true;
+      
+      // Clear any prev image in crop stage
+      const cropImg = document.getElementById("blueprint-crop-image");
+      if (cropImg && cropImg.src && cropImg.src.length > 40) {
+        cropImg.onload = () => void 0;
+        cropImg.src = "about:blank";
+        setTimeout(() => { cropImg.src = ""; }, 10);
+      }
+      
       showStep("upload");
     }
 
-    button.addEventListener("click", openModal);
     els.close.addEventListener("click", closeModal);
     
-    // Handle "Replace PDF" button
+    // Handle "Replace PDF" button in toolbar
+    const replacePdfButton = document.getElementById("replace-pdf-button");
     if (replacePdfButton) {
       replacePdfButton.addEventListener("click", openModal);
     }
     
-    // Remove current blueprint button
+    // Remove current blueprint button (replaces with fresh upload)
     if (els.clearBtn) {
       els.clearBtn.addEventListener("click", async () => {
         setStatus("Removing current blueprint...");
@@ -193,8 +208,11 @@
           setStatus("Failed to remove blueprint: " + (detail.detail || resp.status));
           return;
         }
-        closeModal();
-        setTimeout(() => window.location.reload(), 500);
+        
+        // After successful removal, show success message and reset file input
+        setStatus("Blueprint removed! You can now upload a new PDF.");
+        els.file.value = "";
+        setTimeout(() => window.location.reload(), 1000);
       });
     }
     modal.addEventListener("click", (e) => {
