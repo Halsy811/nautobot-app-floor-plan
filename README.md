@@ -16,6 +16,7 @@
 This App aids in data center management by providing the ability to create a gridded representation of the floor plan of a Nautobot Location and indicate the relative location of each Nautobot Rack within that floor plan.
 
 ### Screenshots
+<img width="1316" height="845" alt="image" src="https://github.com/user-attachments/assets/2366dcd0-0a93-48af-bb18-feaef2cf732d" />
 
 ![A sample floor plan](https://raw.githubusercontent.com/nautobot/nautobot-app-floor-plan/develop/docs/images/floor-plan-populated-dark.png)
 
