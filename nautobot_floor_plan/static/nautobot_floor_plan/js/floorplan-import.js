@@ -130,6 +130,7 @@
       rotL: document.getElementById("blueprint-crop-rotate-l"),
       rotR: document.getElementById("blueprint-crop-rotate-r"),
       commit: document.getElementById("blueprint-crop-commit"),
+      clearBtn: document.getElementById("blueprint-import-clear-btn"),
     };
     const replacePdfButton = document.getElementById("replace-pdf-button");
     const csrf = getCookie("csrftoken");
@@ -173,6 +174,28 @@
     // Handle "Replace PDF" button
     if (replacePdfButton) {
       replacePdfButton.addEventListener("click", openModal);
+    }
+    
+    // Remove current blueprint button
+    if (els.clearBtn) {
+      els.clearBtn.addEventListener("click", async () => {
+        setStatus("Removing current blueprint...");
+        const resp = await fetch(`${container.getAttribute("data-floorplan-api")}remove-blueprint/`, {
+          method: "POST",
+          headers: {
+            ...headers,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({})
+        });
+        if (!resp.ok) {
+          const detail = await resp.json().catch(() => ({}));
+          setStatus("Failed to remove blueprint: " + (detail.detail || resp.status));
+          return;
+        }
+        closeModal();
+        setTimeout(() => window.location.reload(), 500);
+      });
     }
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeModal();

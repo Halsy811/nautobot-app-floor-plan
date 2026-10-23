@@ -176,6 +176,34 @@ class FloorPlanViewSet(NautobotModelViewSet):  # pylint: disable=too-many-ancest
         job_result = JobResult.enqueue_job(job_model, request.user, floor_plan=str(floor_plan.pk))
         return Response({"job_result": str(job_result.pk)}, status=http_status.HTTP_202_ACCEPTED)
 
+    @extend_schema(responses={204: None})
+    @action(detail=True, methods=["post"], url_path="remove-blueprint")
+    def remove_blueprint(self, request, *, pk):
+        """Remove the current blueprint background image and source document."""
+        
+        floor_plan = get_object_or_404(self.queryset.restrict(request.user, "change"), pk=pk)
+        
+        # Clear source document and delete associated pages
+        if floor_plan.source_document:
+            floor_plan.source_document.delete()
+        models.BlueprintPage.objects.filter(floor_plan=floor_plan).delete()
+        
+        # Remove background_image URL and reset calibration settings
+        update_fields = []
+        if floor_plan.background_image:
+            floor_plan.background_image = None
+            update_fields.append("background_image")
+        if floor_plan.background_opacity != 100:
+            floor_plan.background_opacity = 100
+            update_fields.append("background_opacity")
+        if floor_plan.bg_rotation != 0:
+            floor_plan.bg_rotation = 0
+            update_fields.append("bg_rotation")
+        if update_fields:
+            floor_plan.save(update_fields=update_fields)
+        
+        return Response(status=http_status.HTTP_204_NO_CONTENT)
+
     @extend_schema(responses={200: serializers.BlueprintPageSerializer(many=True)})
     @action(detail=True)
     def pages(self, request, *, pk):

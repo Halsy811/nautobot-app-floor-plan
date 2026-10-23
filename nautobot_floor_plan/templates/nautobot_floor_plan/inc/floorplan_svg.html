@@ -198,8 +198,15 @@
             </div>
             <div class="blueprint-import-body">
                 <div id="blueprint-import-upload">
-                    <input type="file" id="blueprint-import-file" accept="application/pdf,.pdf" aria-label="PDF file">
-                    <button type="button" class="btn btn-sm btn-primary" id="blueprint-import-upload-btn">
+                    {% if object.background_image %}
+                    <button type="button" class="btn btn-sm btn-danger" id="blueprint-import-clear-btn" style="margin-bottom: 8px;">
+                        <span aria-hidden="true" class="mdi mdi-delete"></span> Remove current blueprint
+                    </button>
+                    <hr style="border-top-color: var(--nb-border-color, #cfd6dd); margin: 12px 0;">
+                    {% endif %}
+                    <label for="blueprint-import-file" style="display: block; margin-bottom: 6px; font-weight: 500;">Choose PDF file:</label>
+                    <input type="file" id="blueprint-import-file" accept="application/pdf,.pdf" aria-label="PDF file" style="width: 100%; box-sizing: border-box;">
+                    <button type="button" class="btn btn-sm btn-primary" id="blueprint-import-upload-btn" style="margin-top: 8px;">
                         <span aria-hidden="true" class="mdi mdi-upload"></span> Upload &amp; render
                     </button>
                     <span class="text-muted" id="blueprint-import-status" role="status" aria-live="polite"></span>
