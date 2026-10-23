@@ -171,7 +171,6 @@
                 <output id="icon-scale-output" for="icon-scale-range">{% widthratio object.icon_scale 1 100 %}</output>
                 <span aria-hidden="true">%</span>
             </div>
-            {% endif %}
 
             <div class="floor-plan-tools-row">
                 <a class="rack_elevation_save_svg_link" download="floor_plan_{{ object.location.name }}.svg" href="{% url 'plugins-api:nautobot_floor_plan-api:floorplan-svg' pk=object.pk %}">
