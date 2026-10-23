@@ -22,10 +22,20 @@
       display: flex; align-items: center; justify-content: center; }
     .blueprint-import-dialog { background: var(--nb-body-bg, #fff); color: var(--nb-body-color, #1a1a1a);
       width: min(920px, 94vw); max-height: 92vh; overflow: auto; border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35); position: relative; z-index: 1; }
     .blueprint-import-head { display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px; border-bottom: 1px solid var(--nb-border-color, #cfd6dd); }
-    .blueprint-import-body { padding: 16px; }
+    .blueprint-import-body { padding: 16px; position: relative; z-index: 1; }
+    /* Upload section always visible with higher priority */
+    #blueprint-import-upload {
+      position: relative;
+      z-index: 1000;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--nb-body-bg, #f8f9fa);
+      border: 1px solid var(--nb-border-color, #cfd6dd);
+      border-radius: 6px;
+    }
     .blueprint-import-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 10px; }
     .blueprint-page-tile { border: 1px solid var(--nb-border-color, #cfd6dd); border-radius: 6px;
@@ -64,10 +74,16 @@
       border: 1px solid var(--nb-border-color, #cfd6dd);
       border-radius: 4px;
       color: var(--nb-body-color, #1a1a1a);
+      z-index: 100;
+      position: relative;
+      width: auto;
+      min-width: 200px;
     }
     #blueprint-import-upload-btn {
       min-width: 140px;
       font-weight: 500;
+      position: relative;
+      z-index: 100;
     }
     /* Crop tools section - make buttons visible */
     .blueprint-import-crop-tools .btn {
