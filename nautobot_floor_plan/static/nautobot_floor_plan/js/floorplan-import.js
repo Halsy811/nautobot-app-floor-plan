@@ -136,11 +136,17 @@
       rotR: document.getElementById("blueprint-crop-rotate-r"),
       commit: document.getElementById("blueprint-crop-commit"),
       clearBtn: document.getElementById("blueprint-import-clear-btn"),
+      pagesBtn: document.getElementById("blueprint-import-pages-btn"),
     };
     const csrf = getCookie("csrftoken");
     const headers = { "X-CSRFToken": csrf };
     let rotation = 0;
     let currentPage = null;
+    let cachedPages = null;
+
+    // The modal's "Remove current blueprint" button is only rendered by the template when the
+    // FloorPlan already has a background_image — a reliable marker for the replace scenario.
+    const hasBackground = () => !!els.clearBtn;
 
     function setStatus(text) {
       els.status.textContent = text || "";
@@ -152,10 +158,13 @@
     }
     function openModal() {
       modal.hidden = false;
-      
+
       showStep("upload");
       resetModal();
-      loadPages();  // if pages already exist from a prior render, jump to the picker
+      // Resume the picker automatically only on FIRST import (no background yet).
+      // When a background exists the user is REPLACING it: stay on the upload step,
+      // the picker remains reachable via the "Choose page from current PDF" button.
+      loadPages({ jump: !hasBackground() });
     }
     function closeModal() {
       modal.hidden = true;
@@ -168,6 +177,8 @@
       els.uploadBtn.disabled = false;
       setStatus("");
       currentPage = null;
+      cachedPages = null;
+      if (els.pagesBtn) els.pagesBtn.hidden = true;
       rotation = 0;
       els.stage.style.transform = "rotate(0deg)";
       els.cropBox.hidden = true;
@@ -189,6 +200,13 @@
     const replacePdfButton = document.getElementById("replace-pdf-button");
     if (replacePdfButton) {
       replacePdfButton.addEventListener("click", openModal);
+    }
+
+    // Jump to the picker for the already-rendered PDF (replace flow keeps upload as home step).
+    if (els.pagesBtn) {
+      els.pagesBtn.addEventListener("click", () => {
+        if (cachedPages && cachedPages.length) renderGrid(cachedPages);
+      });
     }
     
     // Remove current blueprint button (replaces with fresh upload)
@@ -219,12 +237,24 @@
       if (e.target === modal) closeModal();
     });
 
-    async function loadPages() {
+    async function loadPages(opts = {}) {
+      const jump = opts.jump !== false;
       try {
         const resp = await fetch(pagesApi, { headers: { Accept: "application/json" } });
         if (!resp.ok) return;
         const data = await resp.json();
-        if (data.pages && data.pages.length) renderGrid(data.pages);
+        if (data.pages && data.pages.length) {
+          if (jump) {
+            renderGrid(data.pages);
+          } else {
+            // Replace flow: keep the picker one click away without leaving the upload step.
+            cachedPages = data.pages;
+            if (els.pagesBtn) {
+              els.pagesBtn.hidden = false;
+              els.pagesBtn.title = `${data.pages.length} page(s) already rendered from the current PDF`;
+            }
+          }
+        }
       } catch (err) {
         /* no-op: upload will populate */
       }
