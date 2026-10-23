@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const svgUrl = svgContainer.getAttribute('data-svg-url');
     if (!svgUrl) return;
-    var isPanning = true;
+    var isPanning = false; // MUST start false: stale-true made plain mousemove pan (and jump) with no button held
     var startPoint = {x: 0, y: 0};
     var endPoint = {x: 0, y: 0};
     let zoomMode = false; // Start in PAN mode by default
@@ -58,6 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     function initializeSVG(svgElement) {
+        // Hints that the background is draggable; the pan/zoom handlers below keep it in sync.
+        svgElement.style.cursor = "grab";
+
         const svgDisplaySize = {
             w: svgContainer.clientWidth,
             h: svgContainer.clientHeight,
@@ -212,11 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
             resetButton.onclick = resetZoom;
         }
 
-        // On scroll wheel in the SVG, zoom in or out
+        // On scroll wheel over the SVG, zoom in or out centered on the cursor.
+        // Plain wheel (no Shift/Ctrl needed); preventDefault keeps the page from scrolling.
         svgElement.addEventListener("wheel", function(e) {
-            if (!e.shiftKey) return;
-
-            // Prevent default scrolling behavior
             e.preventDefault();
             e.stopPropagation();
 
@@ -259,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (zoomMode) {
                 // In ZOOM mode - Create a selection rectangle
+                svgElement.style.cursor = "crosshair";
                 // Create an SVG point at the mouse position
                 const pt = svgElement.createSVGPoint();
                 pt.x = e.clientX;
@@ -287,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // In PAN mode - Start panning
                 isPanning = true;
+                svgElement.style.cursor = "grabbing";
 
                 // Store the initial mouse position
                 startPoint = {
@@ -430,11 +433,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             isPanning = false;
+            svgElement.style.cursor = zoomMode ? "crosshair" : "grab";
         };
 
         // Handle mouse leaving the SVG area
         svgElement.onmouseleave = function (e) {
             isPanning = false;
+            svgElement.style.cursor = zoomMode ? "crosshair" : "grab";
 
             if (selectionRect && selectionRect.parentNode) {
                 gsap.to(selectionRect, {
