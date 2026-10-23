@@ -46,7 +46,38 @@
     .blueprint-crop-handle[data-corner="nw"] { left: -8px; top: -8px; cursor: nwse-resize; }
     .blueprint-crop-handle[data-corner="ne"] { right: -8px; top: -8px; cursor: nesw-resize; }
     .blueprint-crop-handle[data-corner="se"] { right: -8px; bottom: -8px; cursor: nwse-resize; }
-    .blueprint-crop-handle[data-corner="sw"] { left: -8px; bottom: -8px; cursor: nesw-resize; }
+    .blueprint-import-crop-handle[data-corner="sw"] { left: -8px; bottom: -8px; cursor: nesw-resize; }
+    /* Dark theme compatible buttons */
+    #blueprint-import-upload-btn.btn,
+    .btn-default:not(.active),
+    .btn-info:not(.active) {
+      background: var(--nb-btn-bg, #f0f0f0) !important;
+      color: var(--nb-btn-color, #1a1a1a) !important;
+      border-color: var(--nb-border-color, #cfd6dd) !important;
+    }
+    /* Ensure file input and upload button are visible in dark/light themes */
+    #blueprint-import-file {
+      display: block;
+      margin-bottom: 8px;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid var(--nb-border-color, #cfd6dd);
+      border-radius: 4px;
+      color: var(--nb-body-color, #1a1a1a);
+    }
+    #blueprint-import-upload-btn {
+      min-width: 140px;
+      font-weight: 500;
+    }
+    /* Crop tools section - make buttons visible */
+    .blueprint-import-crop-tools .btn {
+      background: var(--nb-btn-bg, #f8f9fa) !important;
+      color: var(--nb-body-color, #1a1a1a) !important;
+      border-color: var(--nb-border-color, #cfd6dd) !important;
+    }
+    .blueprint-import-crop-tools .btn:hover {
+      background: var(--nb-primary-soft, #e7f3ff) !important;
+    }
   `;
     const style = document.createElement("style");
     style.id = "blueprint-import-styles";
@@ -116,6 +147,7 @@
       currentPage = null;
       rotation = 0;
       els.stage.style.transform = "rotate(0deg)";
+      showStep("upload");
     }
 
     button.addEventListener("click", openModal);
