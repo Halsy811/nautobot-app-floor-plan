@@ -86,6 +86,11 @@
                         aria-pressed="false" disabled aria-disabled="true">
                     <span aria-hidden="true" class="mdi mdi-crop-rotate"></span> Calibrate
                 </button>
+                <button type="button" class="btn btn-sm btn-info" id="replace-pdf-button"
+                        data-modal-target="#blueprint-import-modal"
+                        title="Upload a new PDF to replace this blueprint" hidden>
+                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Replace PDF
+                </button>
                 {% endif %}
             </div>
 
@@ -121,9 +126,9 @@
             {% endif %}
 
             {% if can_calibrate %}
-            <div class="floor-plan-tools-row">
-                <button type="button" class="btn btn-sm btn-info" id="import-pdf-button" hidden>
-                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Import from PDF
+            <div class="floor-plan-tools-row" hidden id="replace-pdf-row">
+                <button type="button" class="btn btn-sm btn-info" id="import-pdf-button">
+                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Replace PDF
                 </button>
             </div>
             {% endif %}
@@ -158,7 +163,6 @@
             </div>
             {% endif %}
 
-            {% if can_calibrate %}
             <div class="floor-plan-tools-row floor-plan-slider-row">
                 <label for="icon-scale-range">Icon size</label>
                 <input type="range" id="icon-scale-range" min="50" max="300" step="5"

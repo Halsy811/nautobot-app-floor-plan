@@ -115,6 +115,7 @@
       rotR: document.getElementById("blueprint-crop-rotate-r"),
       commit: document.getElementById("blueprint-crop-commit"),
     };
+    const replacePdfButton = document.getElementById("replace-pdf-button");
     const csrf = getCookie("csrftoken");
     const headers = { "X-CSRFToken": csrf };
     let rotation = 0;
@@ -152,6 +153,11 @@
 
     button.addEventListener("click", openModal);
     els.close.addEventListener("click", closeModal);
+    
+    // Handle "Replace PDF" button
+    if (replacePdfButton) {
+      replacePdfButton.addEventListener("click", openModal);
+    }
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeModal();
     });

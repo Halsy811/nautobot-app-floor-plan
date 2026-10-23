@@ -213,6 +213,7 @@ function initFloorPlanEditing() {
         var iconOutput = document.getElementById("icon-scale-output");
         var rotationRange = document.getElementById("blueprint-rotation-range");
         var rotationNumber = document.getElementById("blueprint-rotation-number");
+        var replacePdfRow = document.getElementById("replace-pdf-row");
         var placePanel = document.getElementById("place-object-panel");
 
         var floorplanUrl = container.getAttribute("data-floorplan-api");
@@ -1193,6 +1194,11 @@ function initFloorPlanEditing() {
             btn.removeAttribute("aria-disabled");
             btn.addEventListener("click", function () { setMode(btn.dataset.mode); });
         });
+
+        // Show "Replace PDF" button when background_image exists
+        if (replacePdfRow && bg.rot !== undefined) {
+            replacePdfRow.hidden = false;
+        }
 
         // ── Mirror the in-SVG legend into the HTML SR channel ──
         mirrorLegend(svg);
