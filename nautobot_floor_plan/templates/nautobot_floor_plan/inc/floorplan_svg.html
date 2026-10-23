@@ -89,11 +89,12 @@
                 </button>
                 {% endif %}
                 
-                <!-- Replace PDF button - always visible in toolbar -->
+                <!-- Single PDF entry point: "Import PDF" on a blank plan, "Replace PDF" once a background exists -->
                 <button type="button" class="btn btn-sm btn-info" id="replace-pdf-button"
-                        data-modal-target="#blueprint-import-modal" title="Upload a new PDF to replace this blueprint"
-                        style="{% if not object.background_image %}display:none;{% endif %}">
-                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span> Replace PDF
+                        data-modal-target="#blueprint-import-modal"
+                        title="{% if object.background_image %}Upload a new PDF to replace this blueprint{% else %}Upload a PDF and set it as the blueprint{% endif %}">
+                    <span aria-hidden="true" class="mdi mdi-file-pdf-box"></span>
+                    {% if object.background_image %}Replace PDF{% else %}Import PDF{% endif %}
                 </button>
             </div>
 
